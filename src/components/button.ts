@@ -43,7 +43,7 @@ export interface ButtonInfo extends ComponentConfiguration<'button'> {
  *
  * @typeParam TUserData - Type of custom user data that can be passed to command callbacks
  */
-export class Button<TUserData> extends Subscriber<ButtonInfo, never, CommandTopicMap, TUserData, string> {
+export class Button<TUserData> extends Subscriber<ButtonInfo, never, CommandTopicMap, TUserData> {
   /**
    * Creates a new button instance
    *

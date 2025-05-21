@@ -31,13 +31,14 @@ interface CommandTopicConfiguration {
   topic: string;
 }
 
-type CommandCallback<TUserData, TCommandMessage> = (
+type CommandCallback<TUserData, TCommandMap extends Record<string, unknown>> = <
+  TTopicName extends keyof TCommandMap & string
+>(
   client: MqttClient,
-  topicName: string,
-  message: TCommandMessage,
+  topicName: TTopicName,
+  message: TCommandMap[TTopicName],
   userData?: TUserData
 ) => Promise<void>;
-
 /**
  * A base class for Home Assistant MQTT entities that can receive commands. Extends Discoverable to add command handling
  * capabilities.
@@ -51,8 +52,7 @@ export class Subscriber<
   TComponentConfiguration extends BaseComponentConfiguration,
   TStateMap extends Record<string, unknown>,
   TCommandMap extends Record<string, unknown>,
-  TUserData,
-  TCommandMessage
+  TUserData
 > extends Discoverable<TComponentConfiguration, TStateMap> {
   /** List of MQTT topics for entity commands. */
   protected commandTopics: CommandTopicConfiguration[] = [];
@@ -69,7 +69,7 @@ export class Subscriber<
     };
   }
 
-  private commandCallback: CommandCallback<TUserData, TCommandMessage>;
+  private commandCallback: CommandCallback<TUserData, TCommandMap>;
   private userData?: TUserData;
 
   /**
@@ -85,7 +85,7 @@ export class Subscriber<
     settings: ComponentSettings<TComponentConfiguration>,
     stateTopicNames: Extract<keyof TStateMap, string>[],
     commandTopicNames: Extract<keyof TCommandMap, string>[],
-    commandCallback: CommandCallback<TUserData, TCommandMessage>,
+    commandCallback: CommandCallback<TUserData, TCommandMap>,
     userData?: TUserData
   ) {
     if (commandTopicNames.length === 0) {
@@ -124,15 +124,20 @@ export class Subscriber<
       const stringMessage = message.toString();
       this.logger.debug(`Received command message for ${this.identifier} on topic ${topic}: ${stringMessage}`);
 
-      let parsedMessage: TCommandMessage;
+      let parsedMessage: unknown;
 
       try {
         parsedMessage = JSON.parse(stringMessage);
       } catch {
-        parsedMessage = stringMessage as unknown as TCommandMessage;
+        parsedMessage = stringMessage;
       }
 
-      await this.commandCallback(this.mqttClient, commandTopic.name, parsedMessage, this.userData);
+      await this.commandCallback(
+        this.mqttClient,
+        commandTopic.name,
+        parsedMessage as TCommandMap[typeof commandTopic.name],
+        this.userData
+      );
     }
   }
 }

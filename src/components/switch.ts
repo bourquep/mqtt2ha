@@ -49,7 +49,7 @@ export interface SwitchInfo extends ComponentConfiguration<'switch'> {
  *
  * @typeParam TUserData - Type of custom user data that can be passed to command callbacks
  */
-export class Switch<TUserData> extends Subscriber<SwitchInfo, StateTopicMap, CommandTopicMap, TUserData, string> {
+export class Switch<TUserData> extends Subscriber<SwitchInfo, StateTopicMap, CommandTopicMap, TUserData> {
   /**
    * Creates a new switch instance
    *
