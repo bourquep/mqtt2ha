@@ -50,6 +50,7 @@ type CommandCallback<TUserData, TCommandMessage> = (
 export class Subscriber<
   TComponentConfiguration extends BaseComponentConfiguration,
   TStateMap extends Record<string, unknown>,
+  TCommandMap extends Record<string, unknown>,
   TUserData,
   TCommandMessage
 > extends Discoverable<TComponentConfiguration, TStateMap> {
@@ -83,7 +84,7 @@ export class Subscriber<
   constructor(
     settings: ComponentSettings<TComponentConfiguration>,
     stateTopicNames: Extract<keyof TStateMap, string>[],
-    commandTopicNames: string[],
+    commandTopicNames: Extract<keyof TCommandMap, string>[],
     commandCallback: CommandCallback<TUserData, TCommandMessage>,
     userData?: TUserData
   ) {
