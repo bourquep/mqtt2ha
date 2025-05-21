@@ -53,6 +53,7 @@ export class Subscriber<
   TUserData,
   TCommandMessage
 > extends Discoverable<TComponentConfiguration, TState> {
+  /** List of MQTT topics for entity commands. */
   protected commandTopics: CommandTopicConfiguration[] = [];
 
   /**
@@ -74,12 +75,14 @@ export class Subscriber<
    * Creates a new subscribable entity
    *
    * @param settings - The component settings including MQTT configuration
+   * @param stateTopicNames - Array of state topic names
    * @param commandTopicNames - Array of command topic names
    * @param commandCallback - Callback function to handle received commands
    * @param userData - Optional user data to be passed to the command callback
    */
   constructor(
     settings: ComponentSettings<TComponentConfiguration>,
+    stateTopicNames: string[],
     commandTopicNames: string[],
     commandCallback: CommandCallback<TUserData, TCommandMessage>,
     userData?: TUserData
@@ -88,7 +91,7 @@ export class Subscriber<
       throw new Error('No command topics provided');
     }
 
-    super(settings, async () => {
+    super(settings, stateTopicNames, async () => {
       await this.subscribeToCommandTopics();
     });
 
