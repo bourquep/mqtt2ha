@@ -26,6 +26,10 @@ import { MqttClient } from 'mqtt';
 import { ComponentSettings } from '../api/settings';
 import { Subscriber } from '../api/subscriber';
 
+type StateTopicMap = {
+  state_topic: string;
+};
+
 /** Configuration interface for a switch component */
 export interface SwitchInfo extends ComponentConfiguration<'switch'> {
   /** The payload to publish for turning the switch on. Default is "ON". */
@@ -41,7 +45,7 @@ export interface SwitchInfo extends ComponentConfiguration<'switch'> {
  *
  * @typeParam TUserData - Type of custom user data that can be passed to command callbacks
  */
-export class Switch<TUserData> extends Subscriber<SwitchInfo, string, TUserData, string> {
+export class Switch<TUserData> extends Subscriber<SwitchInfo, StateTopicMap, TUserData, string> {
   /**
    * Creates a new switch instance
    *

@@ -39,7 +39,10 @@ interface StateTopicConfiguration {
  * @typeParam TComponentConfiguration - The configuration type specific to this component
  * @typeParam TState - The type of state data this component can handle
  */
-export class Discoverable<TComponentConfiguration extends BaseComponentConfiguration, TState> {
+export class Discoverable<
+  TComponentConfiguration extends BaseComponentConfiguration,
+  TStateMap extends Record<string, unknown>
+> {
   /** The component settings including MQTT configuration */
   protected settings: ComponentSettings<TComponentConfiguration>;
   /** The component configuration containing entity-specific settings */
@@ -55,7 +58,7 @@ export class Discoverable<TComponentConfiguration extends BaseComponentConfigura
   /** MQTT topic for entity configuration */
   protected configTopic: string;
   /** List of MQTT topics for entity state */
-  protected stateTopics: StateTopicConfiguration[] = [];
+  protected stateTopics: StateTopicConfiguration[];
   /** MQTT topic for entity attributes */
   protected attributesTopic: string;
   /** MQTT topic for entity availability status */
@@ -86,7 +89,11 @@ export class Discoverable<TComponentConfiguration extends BaseComponentConfigura
    * @param stateTopicNames - Array of state topic names
    * @param onConnect - Optional callback to be called when MQTT connection is established
    */
-  constructor(settings: ComponentSettings<TComponentConfiguration>, stateTopicNames: string[], onConnect?: () => void) {
+  constructor(
+    settings: ComponentSettings<TComponentConfiguration>,
+    stateTopicNames: Extract<keyof TStateMap, string>[],
+    onConnect?: () => void
+  ) {
     if (stateTopicNames.length === 0) {
       throw new Error('No state topics provided');
     }
@@ -192,7 +199,7 @@ export class Discoverable<TComponentConfiguration extends BaseComponentConfigura
    * @param topicName - The name of the MQTT topic to publish the state to
    * @param state - The new state to set
    */
-  async setState(topicName: string, state: TState) {
+  async setState<K extends Extract<keyof TStateMap, string>>(topicName: K, state: TStateMap[K]) {
     const topicConfiguration = this.stateTopics.find((cfg) => cfg.name === topicName);
 
     if (!topicConfiguration) {

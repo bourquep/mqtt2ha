@@ -43,16 +43,16 @@ type CommandCallback<TUserData, TCommandMessage> = (
  * capabilities.
  *
  * @typeParam TComponentConfiguration - The configuration type specific to this component
- * @typeParam TState - The type of state data this component can handle
+ * @typeParam TStateMap - The type of state data this component can handle
  * @typeParam TUserData - Type of custom user data that can be passed to command callbacks
  * @typeParam TCommandMessage - Type of command messages this component can receive
  */
 export class Subscriber<
   TComponentConfiguration extends BaseComponentConfiguration,
-  TState,
+  TStateMap extends Record<string, unknown>,
   TUserData,
   TCommandMessage
-> extends Discoverable<TComponentConfiguration, TState> {
+> extends Discoverable<TComponentConfiguration, TStateMap> {
   /** List of MQTT topics for entity commands. */
   protected commandTopics: CommandTopicConfiguration[] = [];
 
@@ -82,7 +82,7 @@ export class Subscriber<
    */
   constructor(
     settings: ComponentSettings<TComponentConfiguration>,
-    stateTopicNames: string[],
+    stateTopicNames: Extract<keyof TStateMap, string>[],
     commandTopicNames: string[],
     commandCallback: CommandCallback<TUserData, TCommandMessage>,
     userData?: TUserData

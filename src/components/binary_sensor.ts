@@ -25,6 +25,10 @@ import { ComponentConfiguration } from '@/configuration/component_configuration'
 import { Discoverable } from '../api/discoverable';
 import { ComponentSettings } from '../api/settings';
 
+type StateTopicMap = {
+  state_topic: string;
+};
+
 /** Configuration interface for a binary sensor component */
 export interface BinarySensorInfo extends ComponentConfiguration<'binary_sensor'> {
   /** The payload that represents an ON/active state. Default is "ON". */
@@ -37,7 +41,7 @@ export interface BinarySensorInfo extends ComponentConfiguration<'binary_sensor'
  * Represents a binary sensor in Home Assistant. A binary sensor can only be in one of two states: ON/active or
  * OFF/inactive.
  */
-export class BinarySensor extends Discoverable<BinarySensorInfo, string> {
+export class BinarySensor extends Discoverable<BinarySensorInfo, StateTopicMap> {
   private _isOn?: boolean;
 
   /** @returns Returns the current state of the sensor. */
