@@ -141,7 +141,7 @@ export class Subscriber<
       await this.commandCallback(
         this.mqttClient,
         commandTopic.name,
-        parsedMessage as TCommandMap[typeof commandTopic.name],
+        parsedMessage as TCommandMap[(typeof commandTopic)['name']],
         this.userData
       );
     }
