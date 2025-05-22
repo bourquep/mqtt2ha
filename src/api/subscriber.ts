@@ -31,6 +31,12 @@ interface CommandTopicConfiguration {
   topic: string;
 }
 
+/**
+ * A callback type for handling commands received via MQTT.
+ *
+ * @typeParam TUserData - Type of custom user data that can be passed to the callback
+ * @typeParam TCommandMap - A mapping of command topic names to their respective message types
+ */
 type CommandCallback<TUserData, TCommandMap extends Record<string, unknown>> = <
   TTopicName extends keyof TCommandMap & string
 >(
