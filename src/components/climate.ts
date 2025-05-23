@@ -26,33 +26,36 @@ import { MqttClient } from 'mqtt';
 import { ComponentSettings } from '../api/settings';
 import { Subscriber } from '../api/subscriber';
 
-type StateTopicMap = {
-  action_topic: string;
-  current_humidity_topic: string;
-  current_temperature_topic: string;
-  fan_mode_state_topic: string;
-  mode_state_topic: string;
-  preset_mode_state_topic: string;
-  swing_horizontal_mode_state_topic: string;
-  swing_mode_state_topic: string;
-  target_humidity_state_topic: string;
-  temperature_high_state_topic: string;
-  temperature_low_state_topic: string;
-  temperature_state_topic: string;
-};
+const STATE_TOPIC_KEYS = [
+  'action_topic',
+  'current_humidity_topic',
+  'current_temperature_topic',
+  'fan_mode_state_topic',
+  'mode_state_topic',
+  'preset_mode_state_topic',
+  'swing_horizontal_mode_state_topic',
+  'swing_mode_state_topic',
+  'target_humidity_state_topic',
+  'temperature_high_state_topic',
+  'temperature_low_state_topic',
+  'temperature_state_topic'
+];
 
-type CommandTopicMap = {
-  fan_mode_command_topic: string;
-  mode_command_topic: string;
-  power_command_topic: string;
-  preset_mode_command_topic: string;
-  swing_horizontal_mode_command_topic: string;
-  swing_mode_command_topic: string;
-  target_humidity_command_topic: string;
-  temperature_command_topic: string;
-  temperature_high_command_topic: string;
-  temperature_low_command_topic: string;
-};
+const COMMAND_TOPIC_KEYS = [
+  'fan_mode_command_topic',
+  'mode_command_topic',
+  'power_command_topic',
+  'preset_mode_command_topic',
+  'swing_horizontal_mode_command_topic',
+  'swing_mode_command_topic',
+  'target_humidity_command_topic',
+  'temperature_command_topic',
+  'temperature_high_command_topic',
+  'temperature_low_command_topic'
+];
+
+type StateTopicMap = Record<(typeof STATE_TOPIC_KEYS)[number], string>;
+type CommandTopicMap = Record<(typeof COMMAND_TOPIC_KEYS)[number], string>;
 
 /** Configuration interface for a climate component. */
 export interface ClimateInfo extends ComponentConfiguration<'climate'> {
@@ -117,32 +120,8 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
   ) {
     super(
       settings,
-      [
-        'action_topic',
-        'current_humidity_topic',
-        'current_temperature_topic',
-        'fan_mode_state_topic',
-        'mode_state_topic',
-        'preset_mode_state_topic',
-        'swing_horizontal_mode_state_topic',
-        'swing_mode_state_topic',
-        'target_humidity_state_topic',
-        'temperature_high_state_topic',
-        'temperature_low_state_topic',
-        'temperature_state_topic'
-      ],
-      [
-        'fan_mode_command_topic',
-        'mode_command_topic',
-        'power_command_topic',
-        'preset_mode_command_topic',
-        'swing_horizontal_mode_command_topic',
-        'swing_mode_command_topic',
-        'target_humidity_command_topic',
-        'temperature_command_topic',
-        'temperature_high_command_topic',
-        'temperature_low_command_topic'
-      ],
+      [...STATE_TOPIC_KEYS],
+      [...COMMAND_TOPIC_KEYS],
       async (client: MqttClient, topicName: string, message: string, userData?: TUserData) => {
         await commandCallback(client, topicName, message, userData);
       },
