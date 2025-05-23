@@ -26,118 +26,115 @@ import { MqttClient } from 'mqtt';
 import { ComponentSettings } from '../api/settings';
 import { Subscriber } from '../api/subscriber';
 
-const STATE_TOPIC_KEYS = [
+type StateTopicMap = {
   /**
    * The MQTT topic to subscribe for changes of the current action. Valid action values: `off`, `heating`, `cooling`,
    * `drying`, `idle`, `fan`.
    */
-  'action_topic',
+  action_topic: string;
 
   /**
    * The MQTT topic on which to listen for the current humidity. A `"None"` value received will reset the current
    * humidity. Empty values (`''`) will be ignored.
    */
-  'current_humidity_topic',
+  current_humidity_topic: string;
 
   /**
    * The MQTT topic on which to listen for the current temperature. A `"None"` value received will reset the current
    * temperature. Empty values (`''`) will be ignored.
    */
-  'current_temperature_topic',
+  current_temperature_topic: string;
 
   /**
    * The MQTT topic to subscribe for changes of the HVAC fan mode. If this is not set, the fan mode works in optimistic
    * mode. A "None" payload resets the fan mode state. An empty payload is ignored.
    */
-  'fan_mode_state_topic',
+  fan_mode_state_topic: string;
 
   /**
    * The MQTT topic to subscribe for changes of the HVAC operation mode. If this is not set, the operation mode works in
    * optimistic mode. A "None" payload resets to an `unknown` state. An empty payload is ignored.
    */
-  'mode_state_topic',
+  mode_state_topic: string;
 
   /**
    * The MQTT topic subscribed to receive climate speed based on presets. When preset 'none' is received or `None` the
    * `preset_mode` will be reset.
    */
-  'preset_mode_state_topic',
+  preset_mode_state_topic: string;
 
   /**
    * The MQTT topic to subscribe for changes of the HVAC swing horizontal mode. If this is not set, the swing horizontal
    * mode works in optimistic mode.
    */
-  'swing_horizontal_mode_state_topic',
+  swing_horizontal_mode_state_topic: string;
 
   /**
    * The MQTT topic to subscribe for changes of the HVAC swing mode. If this is not set, the swing mode works in
    * optimistic mode.
    */
-  'swing_mode_state_topic',
+  swing_mode_state_topic: string;
 
   /**
    * The MQTT topic subscribed to receive the target humidity. If this is not set, the target humidity works in
    * optimistic mode. A `"None"` value received will reset the target humidity. Empty values (`''`) will be ignored.
    */
-  'target_humidity_state_topic',
+  target_humidity_state_topic: string;
 
   /**
    * The MQTT topic to subscribe for changes in the target high temperature. If this is not set, the target high
    * temperature works in optimistic mode.
    */
-  'temperature_high_state_topic',
+  temperature_high_state_topic: string;
 
   /**
    * The MQTT topic to subscribe for changes in the target low temperature. If this is not set, the target low
    * temperature works in optimistic mode.
    */
-  'temperature_low_state_topic',
+  temperature_low_state_topic: string;
 
   /**
    * The MQTT topic to subscribe for changes in the target temperature. If this is not set, the target temperature works
    * in optimistic mode. A `"None"` value received will reset the temperature set point. Empty values (`''`) will be
    * ignored.
    */
-  'temperature_state_topic'
-];
+  temperature_state_topic: string;
+};
 
-const COMMAND_TOPIC_KEYS = [
+type CommandTopicMap = {
   /** The MQTT topic to publish commands to change the fan mode. */
-  'fan_mode_command_topic',
+  fan_mode_command_topic: string;
 
   /** The MQTT topic to publish commands to change the HVAC operation mode. */
-  'mode_command_topic',
+  mode_command_topic: string;
 
   /**
    * The MQTT topic to publish commands to change the HVAC power state. Sends the payload configured with `payload_on`
    * if the climate is turned on, or the payload configured with `payload_off` if the climate is turned off.
    */
-  'power_command_topic',
+  power_command_topic: string;
 
   /** The MQTT topic to publish commands to change the preset mode. */
-  'preset_mode_command_topic',
+  preset_mode_command_topic: string;
 
   /** The MQTT topic to publish commands to change the swing horizontal mode. */
-  'swing_horizontal_mode_command_topic',
+  swing_horizontal_mode_command_topic: string;
 
   /** The MQTT topic to publish commands to change the swing mode. */
-  'swing_mode_command_topic',
+  swing_mode_command_topic: string;
 
   /** The MQTT topic to publish commands to change the target humidity. */
-  'target_humidity_command_topic',
+  target_humidity_command_topic: string;
 
   /** The MQTT topic to publish commands to change the target temperature. */
-  'temperature_command_topic',
+  temperature_command_topic: string;
 
   /** The MQTT topic to publish commands to change the high target temperature. */
-  'temperature_high_command_topic',
+  temperature_high_command_topic: string;
 
   /** The MQTT topic to publish commands to change the target low temperature. */
-  'temperature_low_command_topic'
-];
-
-type StateTopicMap = Record<(typeof STATE_TOPIC_KEYS)[number], string>;
-type CommandTopicMap = Record<(typeof COMMAND_TOPIC_KEYS)[number], string>;
+  temperature_low_command_topic: string;
+};
 
 /** Configuration interface for a climate component. */
 export interface ClimateInfo extends ComponentConfiguration<'climate'> {
@@ -298,10 +295,12 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
     commandCallback: (client: MqttClient, topicName: string, message: string, userData?: TUserData) => Promise<void>,
     userData?: TUserData
   ) {
+    const stateTopicKeys = {} as StateTopicMap;
+    const commandTopicKeys = {} as CommandTopicMap;
     super(
       settings,
-      STATE_TOPIC_KEYS,
-      COMMAND_TOPIC_KEYS,
+      Object.keys(stateTopicKeys) as (keyof StateTopicMap)[],
+      Object.keys(commandTopicKeys) as (keyof CommandTopicMap)[],
       async (client: MqttClient, topicName: string, message: string, userData?: TUserData) => {
         await commandCallback(client, topicName, message, userData);
       },
