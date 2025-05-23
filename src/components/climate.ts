@@ -120,8 +120,8 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
   ) {
     super(
       settings,
-      [...STATE_TOPIC_KEYS],
-      [...COMMAND_TOPIC_KEYS],
+      STATE_TOPIC_KEYS,
+      COMMAND_TOPIC_KEYS,
       async (client: MqttClient, topicName: string, message: string, userData?: TUserData) => {
         await commandCallback(client, topicName, message, userData);
       },
