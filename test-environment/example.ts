@@ -125,13 +125,14 @@ async function main() {
       },
       logger: rootLogger.child({ module: 'climate' })
     },
-    ['mode_state_topic', 'current_temperature_topic', 'temperature_state_topic'],
+    ['action_topic', 'mode_state_topic', 'current_temperature_topic', 'temperature_state_topic'],
     ['mode_command_topic', 'power_command_topic', 'temperature_command_topic']
   );
 
   myClimate.currentTemperature = 19;
   myClimate.targetTemperature = 21;
   myClimate.currentMode = 'heat';
+  myClimate.currentAction = 'heating';
 
   await myBinarySensor.writeConfig();
   await myButton.writeConfig();

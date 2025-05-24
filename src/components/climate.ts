@@ -25,6 +25,8 @@ import { ComponentSettings } from '@/api/settings';
 import { Subscriber } from '@/api/subscriber';
 import { ComponentConfiguration } from '@/configuration/component_configuration';
 
+export type ClimateAction = 'off' | 'heating' | 'cooling' | 'drying' | 'idle' | 'fan';
+
 type StateTopicMap = {
   /**
    * The MQTT topic to subscribe for changes of the current action. Valid action values: `off`, `heating`, `cooling`,
@@ -282,6 +284,7 @@ export interface ClimateInfo extends ComponentConfiguration<'climate'> {
  * @typeParam TUserData - Type of custom user data that can be passed to command callbacks
  */
 export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, CommandTopicMap, TUserData> {
+  private _currentAction?: ClimateAction;
   private _currentMode?: string;
   private _currentTemperature?: number;
   private _currentHumidity?: number;
@@ -294,13 +297,21 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
   private _temperatureLow?: number;
   private _targetTemperature?: number;
 
+  get currentAction() {
+    return this._currentAction;
+  }
+
+  set currentAction(action: ClimateAction | undefined) {
+    this._currentAction = action;
+    this.setStateSync('action_topic', action ?? 'None');
+  }
+
   get currentMode() {
     return this._currentMode;
   }
 
   set currentMode(mode: string | undefined) {
     this._currentMode = mode;
-    // TODO this.setStateSync('action_topic', mode ?? 'None');
     this.setStateSync('mode_state_topic', mode ?? 'None');
   }
 
