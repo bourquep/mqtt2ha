@@ -24,7 +24,6 @@ SOFTWARE.
 import { ComponentSettings } from '@/api/settings';
 import { Subscriber } from '@/api/subscriber';
 import { ComponentConfiguration } from '@/configuration/component_configuration';
-import { MqttClient } from 'mqtt';
 
 type StateTopicMap = {
   /**
@@ -401,7 +400,6 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
    * @param settings - Configuration settings for the climate
    * @param stateTopicNames - Array of state topic names to expose
    * @param commandTopicNames - Array of command topic names to subscribe to
-   * @param commandCallback - Callback function to handle climate state changes
    * @param userData - Optional user data to be passed to the command callback
    */
   constructor(
@@ -414,18 +412,16 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
       settings,
       stateTopicNames,
       commandTopicNames,
-      async (client, topicName, message, userData?) => {
-        await this.handleCommand(client, topicName, message, userData);
+      async (_, topicName, message) => {
+        await this.handleCommand(topicName, message);
       },
       userData
     );
   }
 
   private async handleCommand<TTopicName extends keyof CommandTopicMap & string>(
-    client: MqttClient,
     topicName: TTopicName,
-    message: CommandTopicMap[TTopicName],
-    userData?: TUserData
+    message: CommandTopicMap[TTopicName]
   ) {
     switch (topicName) {
       case 'fan_mode_command_topic':
