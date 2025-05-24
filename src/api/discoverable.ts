@@ -199,20 +199,43 @@ export class Discoverable<
    * @param topicName - The name of the MQTT topic to publish the state to
    * @param state - The new state to set
    */
+  setStateSync<K extends Extract<keyof TStateMap, string>>(topicName: K, state: TStateMap[K]) {
+    const topicConfiguration = this.stateTopics.find((cfg) => cfg.name === topicName);
+
+    if (!topicConfiguration) {
+      this.logger.debug(
+        `Topic '${topicName}' is not part of the 'stateTopicNames' provided to this class constructor.`
+      );
+      return;
+    }
+
+    this.logger.debug(`Setting ${topicConfiguration.name} state for ${this.identifier}...`);
+    this.mqttClient.publish(topicConfiguration.topic, typeof state === 'string' ? state : JSON.stringify(state), {
+      retain: true
+    });
+  }
+
+  /**
+   * Sets the state of the entity
+   *
+   * @param topicName - The name of the MQTT topic to publish the state to
+   * @param state - The new state to set
+   */
   async setState<K extends Extract<keyof TStateMap, string>>(topicName: K, state: TStateMap[K]) {
     const topicConfiguration = this.stateTopics.find((cfg) => cfg.name === topicName);
 
     if (!topicConfiguration) {
-      throw new Error(`Topic '${topicName}' is not part of the 'stateTopicNames' provided to this class constructor.`);
+      this.logger.debug(
+        `Topic '${topicName}' is not part of the 'stateTopicNames' provided to this class constructor.`
+      );
+      return;
     }
 
-    this.logger.debug(`Setting state for ${this.identifier}...`);
+    this.logger.debug(`Setting ${topicConfiguration.name} state for ${this.identifier}...`);
     await this.mqttClient.publishAsync(
       topicConfiguration.topic,
       typeof state === 'string' ? state : JSON.stringify(state),
-      {
-        retain: true
-      }
+      { retain: true }
     );
   }
 }

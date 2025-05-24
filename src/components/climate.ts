@@ -301,8 +301,8 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
 
   set currentMode(mode: string | undefined) {
     this._currentMode = mode;
-    this.setState('action_topic', mode ?? 'None');
-    this.setState('mode_state_topic', mode ?? 'None');
+    this.setStateSync('action_topic', mode ?? 'None');
+    this.setStateSync('mode_state_topic', mode ?? 'None');
   }
 
   get currentTemperature() {
@@ -311,7 +311,7 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
 
   set currentTemperature(temperature: number | undefined) {
     this._currentTemperature = temperature;
-    this.setState('current_temperature_topic', temperature?.toFixed(1) ?? 'None');
+    this.setStateSync('current_temperature_topic', temperature?.toFixed(1) ?? 'None');
   }
 
   get currentHumidity() {
@@ -320,7 +320,7 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
 
   set currentHumidity(humidity: number | undefined) {
     this._currentHumidity = humidity;
-    this.setState('current_humidity_topic', humidity?.toFixed(1) ?? 'None');
+    this.setStateSync('current_humidity_topic', humidity?.toFixed(1) ?? 'None');
   }
 
   get currentFanMode() {
@@ -329,7 +329,7 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
 
   set currentFanMode(fanMode: string | undefined) {
     this._currentFanMode = fanMode;
-    this.setState('fan_mode_state_topic', fanMode ?? 'None');
+    this.setStateSync('fan_mode_state_topic', fanMode ?? 'None');
   }
 
   get currentPresetMode() {
@@ -338,7 +338,7 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
 
   set currentPresetMode(presetMode: string | undefined) {
     this._currentPresetMode = presetMode;
-    this.setState('preset_mode_state_topic', presetMode ?? 'None');
+    this.setStateSync('preset_mode_state_topic', presetMode ?? 'None');
   }
 
   get currentSwingHorizontalMode() {
@@ -347,7 +347,7 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
 
   set currentSwingHorizontalMode(swingMode: string | undefined) {
     this._currentSwingHorizontalMode = swingMode;
-    this.setState('swing_horizontal_mode_state_topic', swingMode ?? 'None');
+    this.setStateSync('swing_horizontal_mode_state_topic', swingMode ?? 'None');
   }
 
   get currentSwingMode() {
@@ -356,7 +356,7 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
 
   set currentSwingMode(swingMode: string | undefined) {
     this._currentSwingMode = swingMode;
-    this.setState('swing_mode_state_topic', swingMode ?? 'None');
+    this.setStateSync('swing_mode_state_topic', swingMode ?? 'None');
   }
 
   get targetHumidity() {
@@ -365,7 +365,7 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
 
   set targetHumidity(humidity: number | undefined) {
     this._targetHumidity = humidity;
-    this.setState('target_humidity_state_topic', humidity?.toFixed(1) ?? 'None');
+    this.setStateSync('target_humidity_state_topic', humidity?.toFixed(1) ?? 'None');
   }
 
   get temperatureHigh() {
@@ -374,7 +374,7 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
 
   set temperatureHigh(temperature: number | undefined) {
     this._temperatureHigh = temperature;
-    this.setState('temperature_high_state_topic', temperature?.toFixed(1) ?? 'None');
+    this.setStateSync('temperature_high_state_topic', temperature?.toFixed(1) ?? 'None');
   }
 
   get temperatureLow() {
@@ -383,7 +383,7 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
 
   set temperatureLow(temperature: number | undefined) {
     this._temperatureLow = temperature;
-    this.setState('temperature_low_state_topic', temperature?.toFixed(1) ?? 'None');
+    this.setStateSync('temperature_low_state_topic', temperature?.toFixed(1) ?? 'None');
   }
 
   get targetTemperature() {
@@ -392,7 +392,7 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
 
   set targetTemperature(temperature: number | undefined) {
     this._targetTemperature = temperature;
-    this.setState('temperature_state_topic', temperature?.toFixed(1) ?? 'None');
+    this.setStateSync('temperature_state_topic', temperature?.toFixed(1) ?? 'None');
   }
 
   /**
