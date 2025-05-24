@@ -178,8 +178,8 @@ export interface ClimateInfo extends ComponentConfiguration<'climate'> {
   mode_state_template?: string;
 
   /**
-   * A list of supported modes. Needs to be a subset of the default values. Default: `["auto", "off", "cool", "heat",
-   * "dry", "fan_only"]`
+   * A list of supported modes. Needs to be a subset of the default values. Default: ["auto", "off", "cool", "heat",
+   * "dry", "fan_only"]
    */
   modes?: string[];
 
