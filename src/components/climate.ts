@@ -287,20 +287,22 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
    * Creates a new climate instance
    *
    * @param settings - Configuration settings for the climate
+   * @param stateTopicNames - Array of state topic names to expose
+   * @param commandTopicNames - Array of command topic names to subscribe to
    * @param commandCallback - Callback function to handle climate state changes
    * @param userData - Optional user data to be passed to the command callback
    */
   constructor(
     settings: ComponentSettings<ClimateInfo>,
+    stateTopicNames: Extract<keyof StateTopicMap, string>[],
+    commandTopicNames: Extract<keyof CommandTopicMap, string>[],
     commandCallback: (client: MqttClient, topicName: string, message: string, userData?: TUserData) => Promise<void>,
     userData?: TUserData
   ) {
-    const stateTopicKeys = {} as StateTopicMap;
-    const commandTopicKeys = {} as CommandTopicMap;
     super(
       settings,
-      Object.keys(stateTopicKeys) as (keyof StateTopicMap)[],
-      Object.keys(commandTopicKeys) as (keyof CommandTopicMap)[],
+      stateTopicNames,
+      commandTopicNames,
       async (client: MqttClient, topicName: string, message: string, userData?: TUserData) => {
         await commandCallback(client, topicName, message, userData);
       },
