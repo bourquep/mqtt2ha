@@ -126,6 +126,9 @@ async function main() {
       logger: rootLogger.child({ module: 'climate' })
     },
     ['action_topic', 'mode_state_topic', 'current_temperature_topic', 'temperature_state_topic'],
+    async (topicName, state) => {
+      rootLogger.info(`Climate ${topicName} updated to ${state}`);
+    },
     ['mode_command_topic', 'power_command_topic', 'temperature_command_topic']
   );
 

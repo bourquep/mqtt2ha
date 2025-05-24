@@ -21,6 +21,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import { StateChangedHandler } from '@/api/discoverable';
 import { ComponentSettings } from '@/api/settings';
 import { Subscriber } from '@/api/subscriber';
 import { ComponentConfiguration } from '@/configuration/component_configuration';
@@ -32,7 +33,7 @@ type StateTopicMap = {
    * The MQTT topic to subscribe for changes of the current action. Valid action values: `off`, `heating`, `cooling`,
    * `drying`, `idle`, `fan`.
    */
-  action_topic: string;
+  action_topic: ClimateAction;
 
   /**
    * The MQTT topic on which to listen for the current humidity. A `"None"` value received will reset the current
@@ -284,7 +285,7 @@ export interface ClimateInfo extends ComponentConfiguration<'climate'> {
  * @typeParam TUserData - Type of custom user data that can be passed to command callbacks
  */
 export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, CommandTopicMap, TUserData> {
-  private _currentAction?: ClimateAction;
+  private _currentAction: ClimateAction = 'off';
   private _currentMode?: string;
   private _currentTemperature?: number;
   private _currentHumidity?: number;
@@ -301,9 +302,9 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
     return this._currentAction;
   }
 
-  set currentAction(action: ClimateAction | undefined) {
+  set currentAction(action: ClimateAction) {
     this._currentAction = action;
-    this.setStateSync('action_topic', action ?? 'None');
+    this.setStateSync('action_topic', action);
   }
 
   get currentMode() {
@@ -410,18 +411,21 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
    *
    * @param settings - Configuration settings for the climate
    * @param stateTopicNames - Array of state topic names to expose
+   * @param onStateChange - Callback function to handle state changes
    * @param commandTopicNames - Array of command topic names to subscribe to
    * @param userData - Optional user data to be passed to the command callback
    */
   constructor(
     settings: ComponentSettings<ClimateInfo>,
     stateTopicNames: Extract<keyof StateTopicMap, string>[],
+    onStateChange: StateChangedHandler<StateTopicMap>,
     commandTopicNames: Extract<keyof CommandTopicMap, string>[],
     userData?: TUserData
   ) {
     super(
       settings,
       stateTopicNames,
+      onStateChange,
       commandTopicNames,
       async (_, topicName, message) => {
         await this.handleCommand(topicName, message);
