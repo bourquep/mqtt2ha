@@ -115,7 +115,13 @@ async function main() {
         component: 'climate',
         name: 'MyClimate',
         unique_id: 'my_climate_unique_id',
-        device: myThermostat
+        device: myThermostat,
+        modes: ['off', 'heat'],
+        temperature_unit: 'C',
+        min_temp: 10,
+        max_temp: 30,
+        precision: 0.1,
+        temp_step: 0.5
       },
       logger: rootLogger.child({ module: 'climate' })
     },
@@ -123,13 +129,14 @@ async function main() {
     ['mode_command_topic', 'power_command_topic', 'temperature_command_topic']
   );
 
+  myClimate.currentTemperature = 19;
+  myClimate.targetTemperature = 21;
+  myClimate.currentMode = 'heat';
+
   await myBinarySensor.writeConfig();
   await myButton.writeConfig();
   await mySwitch.writeConfig();
   await myClimate.writeConfig();
-
-  myClimate.currentTemperature = 70;
-  myClimate.targetTemperature = 68;
 }
 
 main().catch((error) => {
