@@ -285,6 +285,7 @@ export interface ClimateInfo extends ComponentConfiguration<'climate'> {
  * @typeParam TUserData - Type of custom user data that can be passed to command callbacks
  */
 export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, CommandTopicMap, TUserData> {
+  private _lastOnMode?: string;
   private _currentAction: ClimateAction = 'off';
   private _currentMode?: string;
   private _currentTemperature?: number;
@@ -312,6 +313,9 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
   }
 
   set currentMode(mode: string | undefined) {
+    if (mode !== 'off') {
+      this._lastOnMode = mode;
+    }
     this._currentMode = mode;
     this.setStateSync('mode_state_topic', mode ?? 'None');
   }
@@ -449,8 +453,7 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
 
       case 'power_command_topic':
         if (message === (this.component.payload_on ?? 'ON')) {
-          // TODO: Properly restore previous mode
-          this.currentMode = 'auto';
+          this.currentMode = this._lastOnMode;
         } else if (message === (this.component.payload_off ?? 'OFF')) {
           this.currentMode = 'off';
         } else {
