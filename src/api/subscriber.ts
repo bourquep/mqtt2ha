@@ -82,7 +82,6 @@ export class Subscriber<
    * @param onStateChange - Callback function to handle state changes
    * @param commandTopicNames - Array of command topic names
    * @param commandCallback - Callback function to handle received commands
-   * @param userData - Optional user data to be passed to the command callback
    */
   constructor(
     settings: ComponentSettings<TComponentConfiguration>,
