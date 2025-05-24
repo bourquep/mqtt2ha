@@ -120,18 +120,7 @@ async function main() {
       logger: rootLogger.child({ module: 'climate' })
     },
     ['mode_state_topic', 'current_temperature_topic', 'temperature_state_topic'],
-    [
-      'fan_mode_command_topic',
-      'mode_command_topic',
-      'power_command_topic',
-      // 'preset_mode_command_topic',
-      // 'swing_horizontal_mode_command_topic',
-      // 'swing_mode_command_topic',
-      // 'target_humidity_command_topic',
-      'temperature_command_topic'
-      // 'temperature_high_command_topic',
-      // 'temperature_low_command_topic'
-    ]
+    ['mode_command_topic', 'power_command_topic', 'temperature_command_topic']
   );
 
   await myBinarySensor.writeConfig();
