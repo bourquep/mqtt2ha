@@ -22,6 +22,7 @@ SOFTWARE.
 */
 
 import { BinarySensor, Button, DeviceConfiguration, MqttSettings, Switch } from '@/.';
+import { Climate } from '@/components/climate';
 import { pino } from 'pino';
 
 const rootLogger = pino({
@@ -38,6 +39,7 @@ const rootLogger = pino({
   }
 }).child({ module: 'example' });
 
+/** Main function to run the example. */
 async function main() {
   const mqttSettings: MqttSettings = {
     host: 'mosquitto.test-environment.orb.local',
@@ -98,11 +100,49 @@ async function main() {
     }
   );
 
+  const myThermostat: DeviceConfiguration = {
+    name: 'MyThermostat',
+    manufacturer: 'MyManufacturer',
+    model: 'MyModel',
+    sw_version: '1.0.0',
+    identifiers: 'my_thermostat_id'
+  };
+
+  const myClimate = new Climate(
+    {
+      mqtt: mqttSettings,
+      component: {
+        component: 'climate',
+        name: 'MyClimate',
+        unique_id: 'my_climate_unique_id',
+        device: myThermostat
+      },
+      logger: rootLogger.child({ module: 'climate' })
+    },
+    ['mode_state_topic', 'current_temperature_topic', 'temperature_state_topic'],
+    [
+      'fan_mode_command_topic',
+      'mode_command_topic',
+      'power_command_topic',
+      // 'preset_mode_command_topic',
+      // 'swing_horizontal_mode_command_topic',
+      // 'swing_mode_command_topic',
+      // 'target_humidity_command_topic',
+      'temperature_command_topic'
+      // 'temperature_high_command_topic',
+      // 'temperature_low_command_topic'
+    ]
+  );
+
   await myBinarySensor.writeConfig();
   await myButton.writeConfig();
   await mySwitch.writeConfig();
+  await myClimate.writeConfig();
+
+  myClimate.currentTemperature = 70;
+  myClimate.targetTemperature = 68;
 }
 
 main().catch((error) => {
-  rootLogger.error('Error:', error);
+  rootLogger.error(error, 'Error:');
 });

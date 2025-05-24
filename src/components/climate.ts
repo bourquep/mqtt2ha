@@ -21,10 +21,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+import { ComponentSettings } from '@/api/settings';
+import { Subscriber } from '@/api/subscriber';
 import { ComponentConfiguration } from '@/configuration/component_configuration';
 import { MqttClient } from 'mqtt';
-import { ComponentSettings } from '../api/settings';
-import { Subscriber } from '../api/subscriber';
 
 type StateTopicMap = {
   /**
@@ -301,7 +301,7 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
 
   set currentMode(mode: string | undefined) {
     this._currentMode = mode;
-    this.setStateSync('action_topic', mode ?? 'None');
+    // TODO this.setStateSync('action_topic', mode ?? 'None');
     this.setStateSync('mode_state_topic', mode ?? 'None');
   }
 
@@ -408,17 +408,75 @@ export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, C
     settings: ComponentSettings<ClimateInfo>,
     stateTopicNames: Extract<keyof StateTopicMap, string>[],
     commandTopicNames: Extract<keyof CommandTopicMap, string>[],
-    commandCallback: (client: MqttClient, topicName: string, message: string, userData?: TUserData) => Promise<void>,
     userData?: TUserData
   ) {
     super(
       settings,
       stateTopicNames,
       commandTopicNames,
-      async (client: MqttClient, topicName: string, message: string, userData?: TUserData) => {
-        await commandCallback(client, topicName, message, userData);
+      async (client, topicName, message, userData?) => {
+        await this.handleCommand(client, topicName, message, userData);
       },
       userData
     );
+  }
+
+  private async handleCommand<TTopicName extends keyof CommandTopicMap & string>(
+    client: MqttClient,
+    topicName: TTopicName,
+    message: CommandTopicMap[TTopicName],
+    userData?: TUserData
+  ) {
+    switch (topicName) {
+      case 'fan_mode_command_topic':
+        this.currentFanMode = message;
+        break;
+
+      case 'mode_command_topic':
+        this.currentMode = message;
+        break;
+
+      case 'power_command_topic':
+        if (message === (this.component.payload_on ?? 'ON')) {
+          // TODO: Properly restore previous mode
+          this.currentMode = 'auto';
+        } else if (message === (this.component.payload_off ?? 'OFF')) {
+          this.currentMode = 'off';
+        } else {
+          this.logger.warn("Received an unexpected payload on the 'power_command_topic':", message);
+        }
+        break;
+
+      case 'preset_mode_command_topic':
+        this.currentPresetMode = message;
+        break;
+
+      case 'swing_horizontal_mode_command_topic':
+        this.currentSwingHorizontalMode = message;
+        break;
+
+      case 'swing_mode_command_topic':
+        this.currentSwingMode = message;
+        break;
+
+      case 'target_humidity_command_topic':
+        this.targetHumidity = parseFloat(message);
+        break;
+
+      case 'temperature_command_topic':
+        this.targetTemperature = parseFloat(message);
+        break;
+
+      case 'temperature_high_command_topic':
+        this.temperatureHigh = parseFloat(message);
+        break;
+
+      case 'temperature_low_command_topic':
+        this.temperatureLow = parseFloat(message);
+        break;
+
+      default:
+        this.logger.warn('Received an unexpected command topic:', topicName);
+    }
   }
 }
