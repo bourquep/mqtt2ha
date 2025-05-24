@@ -283,6 +283,118 @@ export interface ClimateInfo extends ComponentConfiguration<'climate'> {
  * @typeParam TUserData - Type of custom user data that can be passed to command callbacks
  */
 export class Climate<TUserData> extends Subscriber<ClimateInfo, StateTopicMap, CommandTopicMap, TUserData> {
+  private _currentMode?: string;
+  private _currentTemperature?: number;
+  private _currentHumidity?: number;
+  private _currentFanMode?: string;
+  private _currentPresetMode?: string;
+  private _currentSwingHorizontalMode?: string;
+  private _currentSwingMode?: string;
+  private _targetHumidity?: number;
+  private _temperatureHigh?: number;
+  private _temperatureLow?: number;
+  private _targetTemperature?: number;
+
+  get currentMode() {
+    return this._currentMode;
+  }
+
+  set currentMode(mode: string | undefined) {
+    this._currentMode = mode;
+    this.setState('action_topic', mode ?? 'None');
+    this.setState('mode_state_topic', mode ?? 'None');
+  }
+
+  get currentTemperature() {
+    return this._currentTemperature;
+  }
+
+  set currentTemperature(temperature: number | undefined) {
+    this._currentTemperature = temperature;
+    this.setState('current_temperature_topic', temperature?.toFixed(1) ?? 'None');
+  }
+
+  get currentHumidity() {
+    return this._currentHumidity;
+  }
+
+  set currentHumidity(humidity: number | undefined) {
+    this._currentHumidity = humidity;
+    this.setState('current_humidity_topic', humidity?.toFixed(1) ?? 'None');
+  }
+
+  get currentFanMode() {
+    return this._currentFanMode;
+  }
+
+  set currentFanMode(fanMode: string | undefined) {
+    this._currentFanMode = fanMode;
+    this.setState('fan_mode_state_topic', fanMode ?? 'None');
+  }
+
+  get currentPresetMode() {
+    return this._currentPresetMode;
+  }
+
+  set currentPresetMode(presetMode: string | undefined) {
+    this._currentPresetMode = presetMode;
+    this.setState('preset_mode_state_topic', presetMode ?? 'None');
+  }
+
+  get currentSwingHorizontalMode() {
+    return this._currentSwingHorizontalMode;
+  }
+
+  set currentSwingHorizontalMode(swingMode: string | undefined) {
+    this._currentSwingHorizontalMode = swingMode;
+    this.setState('swing_horizontal_mode_state_topic', swingMode ?? 'None');
+  }
+
+  get currentSwingMode() {
+    return this._currentSwingMode;
+  }
+
+  set currentSwingMode(swingMode: string | undefined) {
+    this._currentSwingMode = swingMode;
+    this.setState('swing_mode_state_topic', swingMode ?? 'None');
+  }
+
+  get targetHumidity() {
+    return this._targetHumidity;
+  }
+
+  set targetHumidity(humidity: number | undefined) {
+    this._targetHumidity = humidity;
+    this.setState('target_humidity_state_topic', humidity?.toFixed(1) ?? 'None');
+  }
+
+  get temperatureHigh() {
+    return this._temperatureHigh;
+  }
+
+  set temperatureHigh(temperature: number | undefined) {
+    this._temperatureHigh = temperature;
+    this.setState('temperature_high_state_topic', temperature?.toFixed(1) ?? 'None');
+  }
+
+  get temperatureLow() {
+    return this._temperatureLow;
+  }
+
+  set temperatureLow(temperature: number | undefined) {
+    this._temperatureLow = temperature;
+    this.setState('temperature_low_state_topic', temperature?.toFixed(1) ?? 'None');
+  }
+
+  get targetTemperature() {
+    return this._targetTemperature;
+  }
+
+  set targetTemperature(temperature: number | undefined) {
+    this._targetTemperature = temperature;
+    this.setState('temperature_state_topic', temperature?.toFixed(1) ?? 'None');
+  }
+
   /**
    * Creates a new climate instance
    *
